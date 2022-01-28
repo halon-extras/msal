@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug File",
+      "type": "hsl",
+      "request": "launch",
+      "program": "${file}",
+      "plugins": [
+        "msal"
+      ]
+    },
+    {
+      "name": "Debug Live Stage",
+      "type": "halon",
+      "request": "launch",
+      "plugins": [
+        "msal"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "msal",
+  "context": "..",
+  "dockerFile": "./Dockerfile",
+  "overrideCommand": false,
+  "extensions": [
+    "Halon.vscode-halon",
+    "Halon.hsl-linter",
+    "Halon.hsl-debug",
+    "golang.Go"
+  ],
+  "mounts": [
+    "source=${localWorkspaceFolder}/.devcontainer/smtpd/dist,target=/etc/halon,type=bind,consistency=cached"
+  ],
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/usr/local/go/bin"
+  },
+  "build": {
+    "args": {
+      "HALON_REPO_USER": "${localEnv:HALON_REPO_USER}",
+      "HALON_REPO_PASS": "${localEnv:HALON_REPO_PASS}"
+    }
+  }
+}
