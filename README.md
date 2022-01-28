@@ -21,7 +21,7 @@ yum install halon-extras-msal
 ## Configuration
 For the configuration schema, see [msal.schema.json](msal.schema.json). Below is a sample configuration.
 
-**smtpd.yaml**
+### smtpd.yaml
 
 ```
 plugins:
@@ -40,13 +40,27 @@ plugins:
 
 ### msal(options)
 
-Fetch an OAuth2 access token using the provided credentials. A successful fetch will return an associative array with a `result` key that contains the access token. On error an associative array with a `error` key will be provided.
+Fetch an OAuth2 access token using the provided credentials.
 
-### Example
+**Params**
+
+- options `array` - Options array
+
+The following options are available in the **options** array.
+
+- id `string` - The ID of the tenant as configured in `smtpd.yaml` (See above)
+- username `string` - The username for the mailbox in Office 365
+- password `string` - The password for the mailbox in Office 365
+
+**Returns**
+
+A successful fetch will return an associative array with a `result` key that contains the access token. On error an associative array with a `error` key will be provided.
+
+## Example
 
 Below is an example on how to send email through Office 365 using OAuth2.
 
-**predelivery.hsl**
+### predelivery.hsl
 
 ```
 $tenant = "tenant1";
