@@ -34,77 +34,96 @@ func Halon_version() C.int {
 
 //export Halon_init
 func Halon_init(hic *C.HalonInitContext) C.bool {
-	var cfg *C.HalonConfig
-	if !C.HalonMTA_init_getinfo(hic, C.HALONMTA_INIT_CONFIG, nil, 0, unsafe.Pointer(&cfg), nil) {
+	var config *C.HalonConfig
+	if !C.HalonMTA_init_getinfo(hic, C.HALONMTA_INIT_CONFIG, nil, 0, unsafe.Pointer(&config), nil) {
 		log.Println("Could not get init config")
 		return false
 	}
 
-	t := C.HalonMTA_config_object_get(cfg, C.CString("tenants"))
-	if t == nil {
+	tenants_prop_cs := C.CString("tenants")
+	defer C.free(unsafe.Pointer(tenants_prop_cs))
+	tenants_chc := C.HalonMTA_config_object_get(config, tenants_prop_cs)
+	if tenants_chc == nil {
 		log.Println("Missing required \"tenants\" setting")
 		return false
 	}
 
 	i := 0
 	for {
-		y := C.HalonMTA_config_array_get(t, C.ulong(i))
-		if y == nil {
+		i_cul := C.ulong(i)
+		tenant_chc := C.HalonMTA_config_array_get(tenants_chc, i_cul)
+		if tenant_chc == nil {
 			break
 		}
 
-		id := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(y, C.CString("id")), nil)
-		if id == nil {
+		id_prop_cs := C.CString("id")
+		defer C.free(unsafe.Pointer(id_prop_cs))
+		id_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, id_prop_cs), nil)
+		if id_cs == nil {
 			log.Println("Missing required \"id\" setting")
 			return false
 		}
+		id := C.GoString(id_cs)
 
-		cache_file := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(y, C.CString("cache_file")), nil)
-		if cache_file == nil {
+		cache_file_prop_cs := C.CString("cache_file")
+		defer C.free(unsafe.Pointer(cache_file_prop_cs))
+		cache_file_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, cache_file_prop_cs), nil)
+		if cache_file_cs == nil {
 			log.Println("Missing required \"cache_file\" setting")
 			return false
 		}
+		cache_file := C.GoString(cache_file_cs)
 
-		client_id := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(y, C.CString("client_id")), nil)
-		if client_id == nil {
+		client_id_prop_cs := C.CString("client_id")
+		defer C.free(unsafe.Pointer(client_id_prop_cs))
+		client_id_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, client_id_prop_cs), nil)
+		if client_id_cs == nil {
 			log.Println("Missing required \"client_id\" setting")
 			return false
 		}
+		client_id := C.GoString(client_id_cs)
 
-		authority := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(y, C.CString("authority")), nil)
-		if authority == nil {
+		authority_prop_cs := C.CString("authority")
+		defer C.free(unsafe.Pointer(authority_prop_cs))
+		authority_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, authority_prop_cs), nil)
+		if authority_cs == nil {
 			log.Println("Missing required \"authority\" setting")
 			return false
 		}
+		authority := C.GoString(authority_cs)
 
-		s := C.HalonMTA_config_object_get(y, C.CString("scopes"))
-		if s == nil {
+		scopes_prop_cs := C.CString("scopes")
+		defer C.free(unsafe.Pointer(scopes_prop_cs))
+		scopes_chc := C.HalonMTA_config_object_get(tenant_chc, scopes_prop_cs)
+		if scopes_chc == nil {
 			log.Println("Missing required \"scopes\" setting")
 			return false
 		}
 
 		var scopes []string
-		z := 0
+		y := 0
 		for {
-			scope := C.HalonMTA_config_string_get(C.HalonMTA_config_array_get(s, C.ulong(z)), nil)
-			if scope == nil {
+			y_cul := C.ulong(y)
+			scope_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_array_get(scopes_chc, y_cul), nil)
+			if scope_cs == nil {
 				break
 			}
-			scopes = append(scopes, C.GoString(scope))
-			z++
+			scope := C.GoString(scope_cs)
+			scopes = append(scopes, scope)
+			y++
 		}
 		if len(scopes) == 0 {
-			log.Println("Invalid \"scopes\" setting")
+			log.Println("Empty or invalid \"scopes\" setting")
 			return false
 		}
 
-		cacheAccessor := &TokenCache{file: C.GoString(cache_file)}
-		c, err := public.New(C.GoString(client_id), public.WithCache(cacheAccessor), public.WithAuthority(C.GoString(authority)))
+		cacheAccessor := &TokenCache{file: cache_file}
+		client, err := public.New(client_id, public.WithCache(cacheAccessor), public.WithAuthority(authority))
 		if err != nil {
 			log.Println(err)
 			return false
 		}
-		tenants = append(tenants, tenant{id: C.GoString(id), client: c, scopes: scopes})
+		tenants = append(tenants, tenant{id: id, client: client, scopes: scopes})
 
 		i++
 	}
@@ -116,8 +135,15 @@ func set_ret_value(ret *C.HalonHSLValue, key string, value string) {
 	var ret_key *C.HalonHSLValue
 	var ret_value *C.HalonHSLValue
 	C.HalonMTA_hsl_value_array_add(ret, &ret_key, &ret_value)
-	C.HalonMTA_hsl_value_set(ret_key, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(C.CString(key)), 0)
-	C.HalonMTA_hsl_value_set(ret_value, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(C.CString(value)), 0)
+	key_cs := C.CString(key)
+	key_cs_up := unsafe.Pointer(key_cs)
+	defer C.free(key_cs_up)
+	value_cs := C.CString(value)
+	value_cs_up := unsafe.Pointer(value_cs)
+	defer C.free(value_cs_up)
+
+	C.HalonMTA_hsl_value_set(ret_key, C.HALONMTA_HSL_TYPE_STRING, key_cs_up, 0)
+	C.HalonMTA_hsl_value_set(ret_value, C.HALONMTA_HSL_TYPE_STRING, value_cs_up, 0)
 }
 
 func get_token_by_username_and_password(tenant tenant, username string, password string) (string, error) {
@@ -144,48 +170,54 @@ func get_token_by_username_and_password(tenant tenant, username string, password
 
 //export msal
 func msal(hhc *C.HalonHSLContext, args *C.HalonHSLArguments, ret *C.HalonHSLValue) {
-	var id *C.char
-	var username *C.char
-	var password *C.char
+	var id string
+	var id_cs *C.char
+	var username string
+	var username_cs *C.char
+	var password string
+	var password_cs *C.char
 
 	var args_0 = C.HalonMTA_hsl_argument_get(args, 0)
 	if args_0 != nil {
 		if C.HalonMTA_hsl_value_type(args_0) == C.HALONMTA_HSL_TYPE_ARRAY {
-			var args_0_id_str = C.CString("id")
-			defer C.free(unsafe.Pointer(args_0_id_str))
-			var args_0_id *C.HalonHSLValue = C.HalonMTA_hsl_value_array_find(args_0, args_0_id_str)
+			var args_0_id_cs = C.CString("id")
+			defer C.free(unsafe.Pointer(args_0_id_cs))
+			var args_0_id *C.HalonHSLValue = C.HalonMTA_hsl_value_array_find(args_0, args_0_id_cs)
 			if args_0_id == nil {
 				set_ret_value(ret, "error", "Could not find \"id\" option")
 				return
 			}
-			if !C.HalonMTA_hsl_value_get(args_0_id, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(&id), nil) {
+			if !C.HalonMTA_hsl_value_get(args_0_id, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(&id_cs), nil) {
 				set_ret_value(ret, "error", "Invalid type of \"id\" option")
 				return
 			}
+			id = C.GoString(id_cs)
 
-			var args_0_username_str = C.CString("username")
-			defer C.free(unsafe.Pointer(args_0_username_str))
-			var args_0_username *C.HalonHSLValue = C.HalonMTA_hsl_value_array_find(args_0, args_0_username_str)
+			var args_0_username_cs = C.CString("username")
+			defer C.free(unsafe.Pointer(args_0_username_cs))
+			var args_0_username *C.HalonHSLValue = C.HalonMTA_hsl_value_array_find(args_0, args_0_username_cs)
 			if args_0_username == nil {
 				set_ret_value(ret, "error", "Could not find \"username\" option")
 				return
 			}
-			if !C.HalonMTA_hsl_value_get(args_0_username, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(&username), nil) {
+			if !C.HalonMTA_hsl_value_get(args_0_username, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(&username_cs), nil) {
 				set_ret_value(ret, "error", "Invalid type of \"username\" option")
 				return
 			}
+			username = C.GoString(username_cs)
 
-			var args_0_password_str = C.CString("password")
-			defer C.free(unsafe.Pointer(args_0_password_str))
-			var args_0_password *C.HalonHSLValue = C.HalonMTA_hsl_value_array_find(args_0, args_0_password_str)
+			var args_0_password_cs = C.CString("password")
+			defer C.free(unsafe.Pointer(args_0_password_cs))
+			var args_0_password *C.HalonHSLValue = C.HalonMTA_hsl_value_array_find(args_0, args_0_password_cs)
 			if args_0_password == nil {
 				set_ret_value(ret, "error", "Could not find \"password\" option")
 				return
 			}
-			if !C.HalonMTA_hsl_value_get(args_0_password, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(&password), nil) {
+			if !C.HalonMTA_hsl_value_get(args_0_password, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(&password_cs), nil) {
 				set_ret_value(ret, "error", "Invalid type of \"password\" option")
 				return
 			}
+			password = C.GoString(password_cs)
 		} else {
 			set_ret_value(ret, "error", "Invalid type of \"options\" argument")
 			return
@@ -195,8 +227,8 @@ func msal(hhc *C.HalonHSLContext, args *C.HalonHSLArguments, ret *C.HalonHSLValu
 		return
 	}
 	for _, tenant := range tenants {
-		if tenant.id == C.GoString(id) {
-			token, err := get_token_by_username_and_password(tenant, C.GoString(username), C.GoString(password))
+		if tenant.id == id {
+			token, err := get_token_by_username_and_password(tenant, username, password)
 			if err != nil {
 				set_ret_value(ret, "error", err.Error())
 				return
@@ -212,6 +244,7 @@ func msal(hhc *C.HalonHSLContext, args *C.HalonHSLArguments, ret *C.HalonHSLValu
 
 //export Halon_hsl_register
 func Halon_hsl_register(hhrc *C.HalonHSLRegisterContext) C.bool {
-	C.HalonMTA_hsl_register_function(hhrc, C.CString("msal"), nil)
+	msal_cs := C.CString("msal")
+	C.HalonMTA_hsl_register_function(hhrc, msal_cs, nil)
 	return true
 }
