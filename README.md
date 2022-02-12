@@ -46,7 +46,7 @@ plugins:
 
 ## Exported functions
 
-### msal(options)
+### msal(id, [, options])
 
 Fetch an OAuth2 access token using the provided credentials.
 
