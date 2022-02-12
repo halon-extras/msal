@@ -21,8 +21,17 @@ plugins:
     config:
       tenants:
         - id: tenant1
-          cache_file: /tmp/msal_cache.json
+          type: public
+          cache_file: /tmp/msal_tenant1_cache.json
           client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
           authority: https://login.microsoftonline.com/organizations
           scopes:
             - https://outlook.office.com/SMTP.Send
+        - id: tenant2
+          type: confidential
+          cache_file: /tmp/msal_tenant2_cache.json
+          client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+          client_secret: xxxxx~xxxxxxxxxxxxxxxxxxxxxx_xxxxxxxx
+          authority: https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+          scopes:
+            - https://graph.microsoft.com/.default

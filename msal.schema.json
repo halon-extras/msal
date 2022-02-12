@@ -15,13 +15,33 @@
                 "uniqueItems": true,
                 "required": [
                     "id",
+                    "type",
                     "cache_file",
                     "client_id",
                     "authority",
                     "scopes"
                 ],
+                "if": {
+                    "properties": { "type": { "const": "public" } }
+                },
+                "then": {
+                    "not": {
+                        "required": ["client_secret"]
+                    }
+                },
+                "else": {
+                    "required": ["client_secret"]
+                },
                 "properties": {
                     "id": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": ["public", "confidential"]
+                    },
+                    "client_secret": {
                         "type": "string",
                         "minLength": 1
                     },
