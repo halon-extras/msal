@@ -16,7 +16,7 @@
             ]
         },
         "returnType": "array",
-        "detail": "msal(string $id, [, array $options]): array",
+        "detail": "msal(string $id [, array $options]): array",
         "value": "msal($0)",
         "documentation": "Fetch an OAuth2 access token. A successful fetch will return an associative array with a \"result\" key that contains the access token. On error an associative array with a \"error\" key will be provided.",
         "link": "[Full documentation](https://github.com/halon-extras/msal)"
