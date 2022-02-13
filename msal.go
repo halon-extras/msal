@@ -52,129 +52,126 @@ func Halon_init(hic *C.HalonInitContext) C.bool {
 	tenants_prop_cs := C.CString("tenants")
 	defer C.free(unsafe.Pointer(tenants_prop_cs))
 	tenants_chc := C.HalonMTA_config_object_get(config, tenants_prop_cs)
-	if tenants_chc == nil {
-		log.Println("Missing required \"tenants\" setting")
-		return false
-	}
-
-	i := 0
-	for {
-		i_cul := C.ulong(i)
-		tenant_chc := C.HalonMTA_config_array_get(tenants_chc, i_cul)
-		if tenant_chc == nil {
-			break
-		}
-
-		id_prop_cs := C.CString("id")
-		defer C.free(unsafe.Pointer(id_prop_cs))
-		id_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, id_prop_cs), nil)
-		if id_cs == nil {
-			log.Println("Missing required \"id\" setting")
-			return false
-		}
-		id := C.GoString(id_cs)
-
-		type_prop_cs := C.CString("type")
-		defer C.free(unsafe.Pointer(type_prop_cs))
-		type_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, type_prop_cs), nil)
-		if type_cs == nil {
-			log.Println("Missing required \"type\" setting")
-			return false
-		}
-		_type := C.GoString(type_cs)
-
-		cache_file_prop_cs := C.CString("cache_file")
-		defer C.free(unsafe.Pointer(cache_file_prop_cs))
-		cache_file_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, cache_file_prop_cs), nil)
-		if cache_file_cs == nil {
-			log.Println("Missing required \"cache_file\" setting")
-			return false
-		}
-		cache_file := C.GoString(cache_file_cs)
-
-		client_id_prop_cs := C.CString("client_id")
-		defer C.free(unsafe.Pointer(client_id_prop_cs))
-		client_id_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, client_id_prop_cs), nil)
-		if client_id_cs == nil {
-			log.Println("Missing required \"client_id\" setting")
-			return false
-		}
-		client_id := C.GoString(client_id_cs)
-
-		var client_secret string
-		if _type == "confidential" {
-			client_secret_prop_cs := C.CString("client_secret")
-			defer C.free(unsafe.Pointer(client_secret_prop_cs))
-			client_secret_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, client_secret_prop_cs), nil)
-			if client_secret_cs == nil {
-				log.Println("Missing required \"client_secret\" setting")
-				return false
-			}
-			client_secret = C.GoString(client_secret_cs)
-		}
-
-		authority_prop_cs := C.CString("authority")
-		defer C.free(unsafe.Pointer(authority_prop_cs))
-		authority_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, authority_prop_cs), nil)
-		if authority_cs == nil {
-			log.Println("Missing required \"authority\" setting")
-			return false
-		}
-		authority := C.GoString(authority_cs)
-
-		scopes_prop_cs := C.CString("scopes")
-		defer C.free(unsafe.Pointer(scopes_prop_cs))
-		scopes_chc := C.HalonMTA_config_object_get(tenant_chc, scopes_prop_cs)
-		if scopes_chc == nil {
-			log.Println("Missing required \"scopes\" setting")
-			return false
-		}
-
-		var scopes []string
-		y := 0
+	if tenants_chc != nil {
+		i := 0
 		for {
-			y_cul := C.ulong(y)
-			scope_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_array_get(scopes_chc, y_cul), nil)
-			if scope_cs == nil {
+			i_cul := C.ulong(i)
+			tenant_chc := C.HalonMTA_config_array_get(tenants_chc, i_cul)
+			if tenant_chc == nil {
 				break
 			}
-			scope := C.GoString(scope_cs)
-			scopes = append(scopes, scope)
-			y++
-		}
-		if len(scopes) == 0 {
-			log.Println("Empty or invalid \"scopes\" setting")
-			return false
-		}
 
-		switch _type {
-		case "public":
-			cacheAccessor := &TokenCache{file: cache_file}
-			client, err := public.New(client_id, public.WithCache(cacheAccessor), public.WithAuthority(authority))
-			if err != nil {
-				log.Println(err)
+			id_prop_cs := C.CString("id")
+			defer C.free(unsafe.Pointer(id_prop_cs))
+			id_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, id_prop_cs), nil)
+			if id_cs == nil {
+				log.Println("Missing required \"id\" setting for tenant")
 				return false
 			}
-			public_tenants = append(public_tenants, public_tenant{id: id, client: client, scopes: scopes})
-		case "confidential":
-			cacheAccessor := &TokenCache{file: cache_file}
-			cred, err := confidential.NewCredFromSecret(client_secret)
-			if err != nil {
-				log.Println(err)
-				return false
-			}
-			client, err := confidential.New(client_id, cred, confidential.WithAccessor(cacheAccessor), confidential.WithAuthority(authority))
-			if err != nil {
-				log.Println(err)
-				return false
-			}
-			confidential_clients = append(confidential_clients, confidential_client{id: id, client: client, scopes: scopes, secret: client_secret})
-		default:
-			log.Println("Empty or invalid \"type\" setting")
-			return false
-		}
+			id := C.GoString(id_cs)
 
-		i++
+			type_prop_cs := C.CString("type")
+			defer C.free(unsafe.Pointer(type_prop_cs))
+			type_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, type_prop_cs), nil)
+			if type_cs == nil {
+				log.Println("Missing required \"type\" setting for tenant")
+				return false
+			}
+			_type := C.GoString(type_cs)
+
+			cache_file_prop_cs := C.CString("cache_file")
+			defer C.free(unsafe.Pointer(cache_file_prop_cs))
+			cache_file_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, cache_file_prop_cs), nil)
+			if cache_file_cs == nil {
+				log.Println("Missing required \"cache_file\" setting for tenant")
+				return false
+			}
+			cache_file := C.GoString(cache_file_cs)
+
+			client_id_prop_cs := C.CString("client_id")
+			defer C.free(unsafe.Pointer(client_id_prop_cs))
+			client_id_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, client_id_prop_cs), nil)
+			if client_id_cs == nil {
+				log.Println("Missing required \"client_id\" setting for tenant")
+				return false
+			}
+			client_id := C.GoString(client_id_cs)
+
+			var client_secret string
+			if _type == "confidential" {
+				client_secret_prop_cs := C.CString("client_secret")
+				defer C.free(unsafe.Pointer(client_secret_prop_cs))
+				client_secret_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, client_secret_prop_cs), nil)
+				if client_secret_cs == nil {
+					log.Println("Missing required \"client_secret\" setting for tenant")
+					return false
+				}
+				client_secret = C.GoString(client_secret_cs)
+			}
+
+			authority_prop_cs := C.CString("authority")
+			defer C.free(unsafe.Pointer(authority_prop_cs))
+			authority_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_object_get(tenant_chc, authority_prop_cs), nil)
+			if authority_cs == nil {
+				log.Println("Missing required \"authority\" setting for tenant")
+				return false
+			}
+			authority := C.GoString(authority_cs)
+
+			scopes_prop_cs := C.CString("scopes")
+			defer C.free(unsafe.Pointer(scopes_prop_cs))
+			scopes_chc := C.HalonMTA_config_object_get(tenant_chc, scopes_prop_cs)
+			if scopes_chc == nil {
+				log.Println("Missing required \"scopes\" setting for tenant")
+				return false
+			}
+
+			var scopes []string
+			y := 0
+			for {
+				y_cul := C.ulong(y)
+				scope_cs := C.HalonMTA_config_string_get(C.HalonMTA_config_array_get(scopes_chc, y_cul), nil)
+				if scope_cs == nil {
+					break
+				}
+				scope := C.GoString(scope_cs)
+				scopes = append(scopes, scope)
+				y++
+			}
+			if len(scopes) == 0 {
+				log.Println("Empty or invalid \"scopes\" setting for tenant")
+				return false
+			}
+
+			switch _type {
+			case "public":
+				cacheAccessor := &TokenCache{file: cache_file}
+				client, err := public.New(client_id, public.WithCache(cacheAccessor), public.WithAuthority(authority))
+				if err != nil {
+					log.Println(err)
+					return false
+				}
+				public_tenants = append(public_tenants, public_tenant{id: id, client: client, scopes: scopes})
+			case "confidential":
+				cacheAccessor := &TokenCache{file: cache_file}
+				cred, err := confidential.NewCredFromSecret(client_secret)
+				if err != nil {
+					log.Println(err)
+					return false
+				}
+				client, err := confidential.New(client_id, cred, confidential.WithAccessor(cacheAccessor), confidential.WithAuthority(authority))
+				if err != nil {
+					log.Println(err)
+					return false
+				}
+				confidential_clients = append(confidential_clients, confidential_client{id: id, client: client, scopes: scopes, secret: client_secret})
+			default:
+				log.Println("Empty or invalid \"type\" setting for tenant")
+				return false
+			}
+
+			i++
+		}
 	}
 
 	return true
