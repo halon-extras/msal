@@ -58,8 +58,8 @@ Fetch an OAuth2 access token using the provided credentials.
 
 The following options are available in the **options** array.
 
-- username `string` - The username (Ony applicable to tenants of type `public`)
-- password `string` - The password (Ony applicable to tenants of type `public`)
+- username `string` - The username (Only applicable to tenants of type `public`)
+- password `string` - The password (Only applicable to tenants of type `public`)
 
 **Returns**
 
