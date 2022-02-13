@@ -38,6 +38,7 @@ plugins:
         - id: tenant2
           type: confidential
           client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+          client_secret: xxxxx~xxxxxxxxxxxxxxxxxxxxxx_xxxxxxxx
           authority: https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
           scopes:
             - https://graph.microsoft.com/.default
