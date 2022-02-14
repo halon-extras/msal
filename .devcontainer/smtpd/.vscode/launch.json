@@ -5,18 +5,12 @@
       "name": "Debug File",
       "type": "hsl",
       "request": "launch",
-      "program": "${file}",
-      "plugins": [
-        "msal"
-      ]
+      "program": "${file}"
     },
     {
       "name": "Debug Live Stage",
       "type": "halon",
-      "request": "launch",
-      "plugins": [
-        "msal"
-      ]
+      "request": "launch"
     }
   ]
 }
