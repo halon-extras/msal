@@ -240,7 +240,7 @@ func msal(hhc *C.HalonHSLContext, args *C.HalonHSLArguments, ret *C.HalonHSLValu
 	var args_0 = C.HalonMTA_hsl_argument_get(args, 0)
 	if args_0 != nil {
 		if !C.HalonMTA_hsl_value_get(args_0, C.HALONMTA_HSL_TYPE_STRING, unsafe.Pointer(&id_cs), nil) {
-			set_ret_value(ret, "error", "Invalid type of \"id\" option")
+			set_ret_value(ret, "error", "Invalid type of \"id\" argument")
 			return
 		}
 		id = C.GoString(id_cs)
