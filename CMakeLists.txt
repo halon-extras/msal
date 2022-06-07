@@ -45,6 +45,7 @@ INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/msal.so.link" DESTINATION plugins/aut
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/msal.so.link" DESTINATION plugins/autoload/hsh RENAME msal.so)
 
 INSTALL(FILES "LICENSE" DESTINATION share/doc/plugins/msal)
+INSTALL(FILES "/licenses/LICENSE.go" DESTINATION share/doc/plugins/msal)
 INSTALL(FILES "/licenses/LICENSE.godebug" DESTINATION share/doc/plugins/msal)
 INSTALL(FILES "/licenses/LICENSE.golang-jwt" DESTINATION share/doc/plugins/msal)
 INSTALL(FILES "/licenses/LICENSE.google-uuid" DESTINATION share/doc/plugins/msal)
