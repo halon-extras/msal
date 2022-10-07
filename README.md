@@ -64,3 +64,10 @@ The following options are available in the **options** array.
 **Returns**
 
 A successful fetch will return an associative array with a `result` key that contains the access token. On error an associative array with a `error` key will be provided.
+
+**Example**
+
+```
+import { msasl } from "extras://msal";
+echo msal("tenant1", ["username" => "foo", "password" => "bar"]);
+```

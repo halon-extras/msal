@@ -319,5 +319,6 @@ func msal(hhc *C.HalonHSLContext, args *C.HalonHSLArguments, ret *C.HalonHSLValu
 func Halon_hsl_register(hhrc *C.HalonHSLRegisterContext) C.bool {
 	msal_cs := C.CString("msal")
 	C.HalonMTA_hsl_register_function(hhrc, msal_cs, nil)
+	C.HalonMTA_hsl_module_register_function(hhrc, msal_cs, nil)
 	return true
 }
