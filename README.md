@@ -47,6 +47,8 @@ plugins:
 
 ## Exported functions
 
+These functions needs to be [imported](https://docs.halon.io/hsl/structures.html#import) from the `extras://msal` module path.
+
 ### msal(id [, options])
 
 Fetch an OAuth2 access token using the provided credentials.
