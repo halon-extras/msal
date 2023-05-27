@@ -1,0 +1,2 @@
+import { msal } from "extras://msal";
+echo msal("tenant1", ["username" => "foo", "password" => "bar"]);

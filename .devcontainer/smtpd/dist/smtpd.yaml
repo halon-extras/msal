@@ -1,37 +1,37 @@
-version: "5.8"
-servers:
-  - id: default
-    listeners:
-      - port: 25
-        address: 127.0.0.1
 environment:
-  uuid:
-    version: 4
   controlsocket:
+    chmod: '0660'
     group: staff
-    chmod: "0660"
   privdrop:
-    user: halon
     group: halon
-  umask: "0027"
+    user: halon
   rlimit:
     nofile: 70000
+  umask: '0027'
+  uuid:
+    version: 4
 plugins:
-  - id: msal
-    config:
-      tenants:
-        - id: tenant1
-          type: public
-          cache_file: /tmp/msal_tenant1_cache.json
-          client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-          authority: https://login.microsoftonline.com/organizations
-          scopes:
-            - https://outlook.office.com/SMTP.Send
-        - id: tenant2
-          type: confidential
-          cache_file: /tmp/msal_tenant2_cache.json
-          client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-          client_secret: xxxxx~xxxxxxxxxxxxxxxxxxxxxx_xxxxxxxx
-          authority: https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-          scopes:
-            - https://graph.microsoft.com/.default
+- config:
+    tenants:
+    - authority: https://login.microsoftonline.com/organizations
+      cache_file: /tmp/msal_tenant1_cache.json
+      client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      id: tenant1
+      scopes:
+      - https://outlook.office.com/SMTP.Send
+      type: public
+    - authority: https://login.microsoftonline.com/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      cache_file: /tmp/msal_tenant2_cache.json
+      client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      client_secret: xxxxx~xxxxxxxxxxxxxxxxxxxxxx_xxxxxxxx
+      id: tenant2
+      scopes:
+      - https://graph.microsoft.com/.default
+      type: confidential
+  id: msal
+servers:
+- id: default
+  listeners:
+  - address: 127.0.0.1
+    port: 25
+version: '5.8'
