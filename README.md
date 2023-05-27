@@ -70,6 +70,6 @@ A successful fetch will return an associative array with a `result` key that con
 **Example**
 
 ```
-import { msasl } from "extras://msal";
+import { msal } from "extras://msal";
 echo msal("tenant1", ["username" => "foo", "password" => "bar"]);
 ```
