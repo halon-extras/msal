@@ -18,13 +18,13 @@ import (
 	"github.com/AzureAD/microsoft-authentication-library-for-go/apps/public"
 )
 
-type public_tenant struct {
+type PublicTenant struct {
 	id     string
 	client public.Client
 	scopes []string
 }
 
-type confidential_client struct {
+type ConfidentialClient struct {
 	id     string
 	client confidential.Client
 	scopes []string
@@ -32,8 +32,8 @@ type confidential_client struct {
 }
 
 var (
-	public_tenants       []public_tenant
-	confidential_clients []confidential_client
+	public_tenants       []PublicTenant
+	confidential_clients []ConfidentialClient
 	lock                 = sync.Mutex{}
 )
 
@@ -210,7 +210,7 @@ func Halon_init(hic *C.HalonInitContext) C.bool {
 					log.Println(err)
 					return false
 				}
-				public_tenants = append(public_tenants, public_tenant{id: id, client: client, scopes: scopes})
+				public_tenants = append(public_tenants, PublicTenant{id: id, client: client, scopes: scopes})
 			case "confidential":
 				cacheAccessor := &TokenCache{file: cache_file}
 				cred, err := confidential.NewCredFromSecret(client_secret)
@@ -223,7 +223,7 @@ func Halon_init(hic *C.HalonInitContext) C.bool {
 					log.Println(err)
 					return false
 				}
-				confidential_clients = append(confidential_clients, confidential_client{id: id, client: client, scopes: scopes, secret: client_secret})
+				confidential_clients = append(confidential_clients, ConfidentialClient{id: id, client: client, scopes: scopes, secret: client_secret})
 			default:
 				log.Println("Empty or invalid \"type\" setting for tenant")
 				return false
@@ -236,7 +236,7 @@ func Halon_init(hic *C.HalonInitContext) C.bool {
 	return true
 }
 
-func GetTokenByUsernameAndPassword(tenant public_tenant, username string, password string) (string, error) {
+func GetTokenByUsernameAndPassword(tenant PublicTenant, username string, password string) (string, error) {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -258,7 +258,7 @@ func GetTokenByUsernameAndPassword(tenant public_tenant, username string, passwo
 	return result.AccessToken, nil
 }
 
-func GetTokenByCredential(tenant confidential_client) (string, error) {
+func GetTokenByCredential(tenant ConfidentialClient) (string, error) {
 	lock.Lock()
 	defer lock.Unlock()
 
