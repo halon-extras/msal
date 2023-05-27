@@ -236,7 +236,7 @@ func Halon_init(hic *C.HalonInitContext) C.bool {
 	return true
 }
 
-func get_token_by_username_and_password(tenant public_tenant, username string, password string) (string, error) {
+func GetTokenByUsernameAndPassword(tenant public_tenant, username string, password string) (string, error) {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -258,7 +258,7 @@ func get_token_by_username_and_password(tenant public_tenant, username string, p
 	return result.AccessToken, nil
 }
 
-func get_token_by_credential(tenant confidential_client) (string, error) {
+func GetTokenByCredential(tenant confidential_client) (string, error) {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -296,7 +296,7 @@ func msal(hhc *C.HalonHSLContext, args *C.HalonHSLArguments, ret *C.HalonHSLValu
 			}{}
 			json.Unmarshal([]byte(options), &opts)
 
-			token, err := get_token_by_username_and_password(tenant, opts.Username, opts.Password)
+			token, err := GetTokenByUsernameAndPassword(tenant, opts.Username, opts.Password)
 			if err != nil {
 				value := map[string]interface{}{"error": err.Error()}
 				SetReturnValueToAny(ret, value)
@@ -311,7 +311,7 @@ func msal(hhc *C.HalonHSLContext, args *C.HalonHSLArguments, ret *C.HalonHSLValu
 
 	for _, tenant := range confidential_clients {
 		if tenant.id == id {
-			token, err := get_token_by_credential(tenant)
+			token, err := GetTokenByCredential(tenant)
 			if err != nil {
 				value := map[string]interface{}{"error": err.Error()}
 				SetReturnValueToAny(ret, value)
