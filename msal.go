@@ -63,7 +63,7 @@ func GetConfigAsJSON(cfg *C.HalonConfig) (string, error) {
 		if x != nil {
 			return "", errors.New(C.GoString(x))
 		} else {
-			return "", errors.New("failed to parse config")
+			return "", errors.New("failed to get config")
 		}
 	}
 }
