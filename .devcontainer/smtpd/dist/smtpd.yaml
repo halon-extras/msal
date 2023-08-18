@@ -34,4 +34,4 @@ servers:
   listeners:
   - address: 127.0.0.1
     port: 25
-version: '5.8'
+version: '6.0'

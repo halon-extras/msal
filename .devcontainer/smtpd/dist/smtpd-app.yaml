@@ -31,4 +31,4 @@ transportgroups:
     session:
       tls:
         mode: dane
-version: '5.8'
+version: '6.0'
