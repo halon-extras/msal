@@ -121,7 +121,7 @@ func Halon_init(hic *C.HalonInitContext) C.bool {
 				log.Println(err)
 				return false
 			}
-			client, err := confidential.New(tenant.ClientId, cred, confidential.WithAccessor(cacheAccessor), confidential.WithAuthority(tenant.Authority))
+			client, err := confidential.New(tenant.Authority, tenant.ClientId, cred, confidential.WithCache(cacheAccessor))
 			if err != nil {
 				log.Println(err)
 				return false
@@ -141,7 +141,11 @@ func GetTokenByUsernameAndPassword(tenant PublicTenant, username string, passwor
 	defer lock.Unlock()
 
 	var userAccount public.Account
-	accounts := tenant.client.Accounts()
+	accounts, err := tenant.client.Accounts(context.Background())
+	if err != nil {
+		return "", err
+	}
+
 	for _, account := range accounts {
 		if account.PreferredUsername == username {
 			userAccount = account
