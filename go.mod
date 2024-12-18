@@ -2,7 +2,7 @@ module github.com/halon-extras/msal
 
 go 1.21
 
-require github.com/AzureAD/microsoft-authentication-library-for-go v1.2.0
+require github.com/AzureAD/microsoft-authentication-library-for-go v1.3.2
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.1.0 // indirect
