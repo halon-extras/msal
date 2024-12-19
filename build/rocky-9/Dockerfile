@@ -20,8 +20,8 @@ RUN echo -n "ROCKY9" > /OSRELEASE.txt
 
 RUN mkdir /tmp/halon
 RUN cd /tmp/halon \
-    && curl -O -L https://go.dev/dl/go1.17.6.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go1.17.6.linux-amd64.tar.gz
+    && curl -O -L https://go.dev/dl/go1.23.4.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
 
 RUN mkdir /licenses
 RUN cp /usr/local/go/LICENSE /licenses/LICENSE.go
