@@ -16,9 +16,6 @@
   "mounts": [
     "source=${localWorkspaceFolder}/.devcontainer/smtpd/dist,target=/etc/halon,type=bind,consistency=cached"
   ],
-  "remoteEnv": {
-    "PATH": "${containerEnv:PATH}:/usr/local/go/bin"
-  },
   "build": {
     "args": {
       "HALON_REPO_USER": "${localEnv:HALON_REPO_USER}",

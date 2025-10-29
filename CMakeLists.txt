@@ -28,8 +28,13 @@ ENDIF()
 SET(CMAKE_BUILD_TYPE Release)
 
 ADD_CUSTOM_TARGET(go ALL
-	COMMAND ${CMAKE_COMMAND} -E env GOPATH=${GOPATH} /usr/local/go/bin/go build -buildmode c-shared -o ${CMAKE_CURRENT_BINARY_DIR}/msal.so
+	COMMAND ${CMAKE_COMMAND} -E env GOPATH=${GOPATH} go build -buildmode c-shared -o ${CMAKE_CURRENT_BINARY_DIR}/msal.so
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+ADD_CUSTOM_TARGET(sbom ALL
+	COMMAND ${CMAKE_COMMAND} -E env GOPATH=${GOPATH} cyclonedx-gomod app -json -packages -files -licenses -output "${CMAKE_CURRENT_BINARY_DIR}/sbom.json"
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 IF(EXISTS "/etc/os-release")
@@ -59,6 +64,8 @@ INSTALL(FILES "/licenses/LICENSE.golang-jwt" DESTINATION share/doc/plugins/msal)
 INSTALL(FILES "/licenses/LICENSE.google-uuid" DESTINATION share/doc/plugins/msal)
 INSTALL(FILES "/licenses/LICENSE.microsoft-authentication-library-for-go" DESTINATION share/doc/plugins/msal)
 INSTALL(FILES "/licenses/LICENSE.pkg-browser" DESTINATION share/doc/plugins/msal)
+
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/sbom.json" DESTINATION /opt/halon/share/sbom RENAME msal.json)
 
 SET(CMAKE_INSTALL_PREFIX "/opt/halon")
 SET(CPACK_PACKAGING_INSTALL_PREFIX "/opt/halon")
