@@ -67,7 +67,7 @@ INSTALL(FILES "/licenses/LICENSE.google-uuid" DESTINATION share/doc/plugins/msal
 INSTALL(FILES "/licenses/LICENSE.microsoft-authentication-library-for-go" DESTINATION share/doc/plugins/msal)
 INSTALL(FILES "/licenses/LICENSE.pkg-browser" DESTINATION share/doc/plugins/msal)
 
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/sbom.json" DESTINATION /opt/halon/share/sbom RENAME msal.json)
+INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/sbom.json" DESTINATION share/sbom/plugins RENAME msal.json)
 
 SET(CMAKE_INSTALL_PREFIX "/opt/halon")
 SET(CPACK_PACKAGING_INSTALL_PREFIX "/opt/halon")
