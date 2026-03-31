@@ -1,6 +1,9 @@
 FROM rockylinux:9
 LABEL org.opencontainers.image.authors="support@halon.io"
 
+ARG TARGETARCH
+ARG TARGETOS
+
 ARG HALON_REPO_USER
 ARG HALON_REPO_PASS
 
@@ -19,10 +22,21 @@ RUN yum install -y cmake3 make gcc-c++ rpm-build
 RUN echo -n "ROCKY9" > /OSRELEASE.txt
 
 RUN mkdir /tmp/halon
-RUN cd /tmp/halon \
-    && curl -O -L https://go.dev/dl/go1.26.1.linux-amd64.tar.gz \
-    && echo "031f088e5d955bab8657ede27ad4e3bc5b7c1ba281f05f245bcc304f327c987a go1.26.1.linux-amd64.tar.gz" | sha256sum -c \
-    && tar -C /usr/local -xzf go1.26.1.linux-amd64.tar.gz
+RUN <<EOF
+set -eu
+cd /tmp/halon
+case "$TARGETARCH" in
+  amd64)
+    SHA256=031f088e5d955bab8657ede27ad4e3bc5b7c1ba281f05f245bcc304f327c987a
+    ;;
+  arm64)
+    SHA256=a290581cfe4fe28ddd737dde3095f3dbeb7f2e4065cab4eae44dfc53b760c2f7
+    ;;
+esac
+curl -O -L https://go.dev/dl/go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
+echo "${SHA256} go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz" | sha256sum -c
+tar -C /usr/local -xzf go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
+EOF
 RUN /usr/local/go/bin/go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
 ENV PATH="$PATH:/usr/local/go/bin:/root/go/bin"
 
