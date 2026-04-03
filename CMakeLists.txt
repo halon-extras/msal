@@ -39,6 +39,11 @@ ADD_CUSTOM_TARGET(sbom ALL
 	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
+ADD_CUSTOM_TARGET(licenses ALL
+	COMMAND ${CMAKE_COMMAND} -E env GOPATH=${GOPATH} rm -rf "${CMAKE_CURRENT_BINARY_DIR}/licenses" && go-licenses save . --save_path="${CMAKE_CURRENT_BINARY_DIR}/licenses"
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
 IF(EXISTS "/etc/os-release")
 	EXECUTE_PROCESS(COMMAND "sed" "-ne" "s/^ID=\"\\?\\([a-z]\\+\\)\"\\?$/\\1/p" "/etc/os-release" OUTPUT_VARIABLE OS_RELEASE_ID OUTPUT_STRIP_TRAILING_WHITESPACE)
 	EXECUTE_PROCESS(COMMAND "sed" "-ne" "s/^VERSION_ID=\"\\?\\([0-9\\.]\\+\\)\"\\?$/\\1/p" "/etc/os-release" OUTPUT_VARIABLE OS_RELEASE_VERSION_ID OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -59,13 +64,7 @@ ENDIF()
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/msal.so.link" DESTINATION plugins/autoload/smtpd RENAME msal.so)
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/msal.so.link" DESTINATION plugins/autoload/hsh RENAME msal.so)
 
-INSTALL(FILES "LICENSE" DESTINATION share/doc/plugins/msal)
-INSTALL(FILES "/licenses/LICENSE.go" DESTINATION share/doc/plugins/msal)
-INSTALL(FILES "/licenses/LICENSE.godebug" DESTINATION share/doc/plugins/msal)
-INSTALL(FILES "/licenses/LICENSE.golang-jwt" DESTINATION share/doc/plugins/msal)
-INSTALL(FILES "/licenses/LICENSE.google-uuid" DESTINATION share/doc/plugins/msal)
-INSTALL(FILES "/licenses/LICENSE.microsoft-authentication-library-for-go" DESTINATION share/doc/plugins/msal)
-INSTALL(FILES "/licenses/LICENSE.pkg-browser" DESTINATION share/doc/plugins/msal)
+INSTALL(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/licenses" DESTINATION share/doc/plugins/${PROJECT_NAME})
 
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/sbom.json" DESTINATION share/sbom/plugins RENAME msal.json)
 

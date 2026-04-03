@@ -41,25 +41,8 @@ echo "${SHA256} go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz" | sha256sum -c
 tar -C /usr/local -xzf go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
 EOF
 RUN /usr/local/go/bin/go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
+RUN /usr/local/go/bin/go install github.com/google/go-licenses/v2@latest
 ENV PATH="$PATH:/usr/local/go/bin:/root/go/bin"
-
-RUN mkdir /licenses
-RUN cp /usr/local/go/LICENSE /licenses/LICENSE.go
-RUN cd /tmp/halon \
-    && curl -O -L https://raw.githubusercontent.com/AzureAD/microsoft-authentication-library-for-go/dev/LICENSE \
-    && cp LICENSE /licenses/LICENSE.microsoft-authentication-library-for-go
-RUN cd /tmp/halon \
-    && curl -O -L https://raw.githubusercontent.com/google/uuid/master/LICENSE \
-    && cp LICENSE /licenses/LICENSE.google-uuid
-RUN cd /tmp/halon \
-    && curl -O -L https://raw.githubusercontent.com/pkg/browser/master/LICENSE \
-    && cp LICENSE /licenses/LICENSE.pkg-browser
-RUN cd /tmp/halon \
-    && curl -O -L https://raw.githubusercontent.com/golang-jwt/jwt/main/LICENSE \
-    && cp LICENSE /licenses/LICENSE.golang-jwt
-RUN cd /tmp/halon \
-    && curl -O -L https://raw.githubusercontent.com/kylelemons/godebug/master/LICENSE \
-    && cp LICENSE /licenses/LICENSE.godebug
 
 RUN rm -rf /tmp/halon
 
