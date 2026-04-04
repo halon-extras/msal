@@ -2,3 +2,4 @@
 *.h
 /build/dist
 /build/vscode
+license.key
