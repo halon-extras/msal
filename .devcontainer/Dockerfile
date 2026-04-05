@@ -38,7 +38,6 @@ RUN echo "deb https://repo.halon.io/ noble stable" >> /etc/apt/sources.list.d/ha
 RUN echo "machine repo.halon.io login ${HALON_REPO_USER} password ${HALON_REPO_PASS}" >> /etc/apt/auth.conf
 RUN apt-get update && apt-get install -y halon=6.3.0
 RUN /usr/bin/install -d /var/run/halon
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
 COPY .devcontainer/entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
