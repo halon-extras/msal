@@ -7,7 +7,6 @@ ARG TARGETOS
 ARG HALON_REPO_USER
 ARG HALON_REPO_PASS
 
-
 RUN echo -n "UBU2204" > /OSRELEASE.txt
 
 RUN apt-get update && apt-get install -y wget gnupg apt-transport-https build-essential cmake git curl file git
