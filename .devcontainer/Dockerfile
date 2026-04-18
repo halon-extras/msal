@@ -31,6 +31,7 @@ rm go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
 EOF
 RUN /usr/local/go/bin/go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.10.0
 RUN /usr/local/go/bin/go install github.com/google/go-licenses/v2@v2.0.1
+RUN /usr/local/go/bin/go install honnef.co/go/tools/cmd/staticcheck@2026.1
 ENV PATH="$PATH:/usr/local/go/bin:/root/go/bin"
 
 RUN wget -qO - https://raw.githubusercontent.com/halon/changelog/master/pgp-keys/7F0A73B5.asc | apt-key add -
