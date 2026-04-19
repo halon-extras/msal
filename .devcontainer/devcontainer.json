@@ -11,7 +11,22 @@
         "halon.hsl-linter",
         "halon.hsl-debug",
         "golang.go"
-      ]
+      ],
+      "settings": {
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": [
+          "--path-mode=abs",
+          "--fast-only"
+        ],
+        "go.formatTool": "custom",
+        "go.alternateTools": {
+          "customFormatter": "golangci-lint"
+        },
+        "go.formatFlags": [
+          "fmt",
+          "--stdin"
+        ]
+      }
     }
   },
   "mounts": [
@@ -22,6 +37,8 @@
       "HALON_REPO_USER": "${localEnv:HALON_REPO_USER}",
       "HALON_REPO_PASS": "${localEnv:HALON_REPO_PASS}"
     },
-    "options": ["--platform=linux/amd64"]
+    "options": [
+      "--platform=linux/amd64"
+    ]
   }
 }
