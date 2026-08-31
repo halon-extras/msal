@@ -26,7 +26,7 @@ case "$TARGETARCH" in
 esac
 curl -O -L https://go.dev/dl/go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
 echo "${SHA256} go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz" | sha256sum -c
-tar -C /usr/local -xzf go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
+LC_ALL=C.UTF-8 LANG=C.UTF-8 bsdtar -C /usr/local -xzf go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
 rm go1.26.1.${TARGETOS}-${TARGETARCH}.tar.gz
 EOF
 
