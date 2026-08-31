@@ -11,7 +11,7 @@ ENV HALON_REPO_PASS=$HALON_REPO_PASS
 
 RUN echo -n "UBU2604" > /OSRELEASE.txt
 
-RUN apt-get update && apt-get install -y wget gnupg apt-transport-https build-essential cmake git curl file
+RUN apt-get update && apt-get install -y wget gnupg apt-transport-https build-essential cmake git curl file libarchive-tools
 
 RUN <<EOF
 set -eu
