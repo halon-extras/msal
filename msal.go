@@ -136,28 +136,12 @@ func Halon_init(hic *C.HalonInitContext) C.bool {
 	return true
 }
 
-func GetTokenByUsernameAndPassword(tenant PublicTenant, username string, password string) (string, error) {
+func GetTokenByUsernameAndPassword(tenant PublicTenant, username, password string) (string, error) {
 	lock.Lock()
 	defer lock.Unlock()
-
-	var userAccount public.Account
-	accounts, err := tenant.client.Accounts(context.Background())
+	result, err := tenant.client.AcquireTokenByUsernamePassword(context.Background(), tenant.scopes, username, password)
 	if err != nil {
 		return "", err
-	}
-
-	for _, account := range accounts {
-		if account.PreferredUsername == username {
-			userAccount = account
-		}
-	}
-
-	result, err := tenant.client.AcquireTokenSilent(context.Background(), tenant.scopes, public.WithSilentAccount(userAccount))
-	if err != nil {
-		result, err = tenant.client.AcquireTokenByUsernamePassword(context.Background(), tenant.scopes, username, password)
-		if err != nil {
-			return "", err
-		}
 	}
 	return result.AccessToken, nil
 }
